@@ -25,25 +25,4 @@ public class QuoteTest {
     int i = 1;
     assertNotNull(String.valueOf(int.class), thingToTest); // how to test that a primitive is it's class/type?
   }
-
-  @Test public void functionalityTestThree() {
-    // parse it!
-    // object it!
-    // ???
-    // Success!
-  }
-
-  @Test public void functionalityTestFour() {
-    // parse it!
-    // object it!
-    // ???
-    // Success!
-  }
-
-  @Test public void functionalityTestFive() {
-    // parse it!
-    // object it!
-    // ???
-    // Success!
-  }
 }
