@@ -5,14 +5,32 @@ package quotes;
 
 import com.google.gson.* ;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class QuotesFinder {
 
+    public String apiPing() throws IOException {
+        URL url = new URL("http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String readableInput = input.readLine();
+//        System.out.println(readableInput);
+        return readableInput;
+    }
+
+    public Quote singleQuoteOut(String jsonString) {
+        Gson quote = new Gson();
+        ForismaticQuote newQuote = quote.fromJson(jsonString, ForismaticQuote.class);
+        System.out.println(newQuote);
+        return newQuote;
+    }
+
     public Quote[] quoteArrayCreator() throws FileNotFoundException {
         Gson quotes = new Gson();
-        FileReader quotesFile = new FileReader("C:\\Users\\PVOVi\\codefellows\\401\\quotes\\src\\main\\resources\\recentquotes.json");
+        FileReader quotesFile = new FileReader("src/main/resources/recentquotes.json");
         System.out.println(quotesFile.toString());
         Quote[] newQuotes = quotes.fromJson(quotesFile, Quote[].class);
         return newQuotes;
