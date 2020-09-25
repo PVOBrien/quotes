@@ -16,16 +16,20 @@ import java.util.List;
 
 public class QuotesFinder {
 
-    public void quotesFromCommandLine() throws IOException {
-//        try {
+    public static void main(String[] args) throws IOException {
+        quotesFromCommandLine();
+    }
+
+    public static void quotesFromCommandLine() throws IOException {
+        try {
             QuotesFinder findQuote = new QuotesFinder();
             String firstStep = findQuote.apiPing();
             saveQuote(firstStep);
             System.out.println(firstStep);
-//        } catch (IOException e) {
-//            QuotesFinder backUpQuote = new QuotesFinder();
-//            System.out.println("why am I here?" + toStringRandomizer(backUpQuote.quoteArrayCreator()));
-//        }
+        } catch (IOException e) {
+            QuotesFinder backUpQuote = new QuotesFinder();
+            System.out.println("why am I here?" + toStringRandomizer(backUpQuote.quoteArrayCreator()));
+        }
     }
 
     public String apiPing() throws IOException {
@@ -48,7 +52,7 @@ public class QuotesFinder {
 
         String guts = Files.readString((Paths.get(path)));
         guts = guts.substring(0, guts.length() - 1);
-        System.out.println("guts after losing one" + guts);
+//        System.out.println("guts after losing one" + guts);
         guts += String.format(",%s\n]", quoteJson);
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter((new FileOutputStream(path)), "UTF8")); // Cp1252 StandardCharsets.UTF_8
         writer.write(guts);
@@ -64,14 +68,14 @@ public class QuotesFinder {
         return quotesAll;
     }
 
-    public String toStringRandomizer (List<Quote> toRead) {
+    public static String toStringRandomizer(List<Quote> toRead) {
         int randomQuoteNumber = random(toRead.size());
         String finalQuote = String.format("\"%s\" was said by the author %s.", toRead.get(randomQuoteNumber).text, toRead.get(randomQuoteNumber).author);
         System.out.println(finalQuote);
         return finalQuote;
     }
 
-    public int random(int sizeOfRandom){
+    public static int random(int sizeOfRandom){
         int a = (int) (Math.random() * sizeOfRandom);
         return a;
     }

@@ -31,7 +31,7 @@ public class QuoteTest {
     assertEquals("This is the first character.", '{', theReturn.charAt(0));
   }
 
-  @Test public void quoteObjCreatorTest() throws IOException {
+  @Test public void quoteObjCreatorTest() throws IOException { // I need to strengthen tests. Would like help setting up this on terminal.
     QuotesFinder testQuote = new QuotesFinder();
     String theQuote = testQuote.apiPing();
     Quote formedQuote = testQuote.singleQuoteOut(theQuote);
