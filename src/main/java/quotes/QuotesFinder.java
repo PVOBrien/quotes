@@ -5,27 +5,77 @@ package quotes;
 
 import com.google.gson.* ;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class QuotesFinder {
 
-    public Quote[] quoteArrayCreator() throws FileNotFoundException {
-        Gson quotes = new Gson();
-        FileReader quotesFile = new FileReader("C:\\Users\\PVOVi\\codefellows\\401\\quotes\\src\\main\\resources\\recentquotes.json");
-        System.out.println(quotesFile.toString());
-        Quote[] newQuotes = quotes.fromJson(quotesFile, Quote[].class);
-        return newQuotes;
+    public static void main(String[] args) throws IOException {
+        quotesFromCommandLine();
     }
 
-    public String toStringRandomizer (Quote[] toRead) {
-        int randomQuoteNumber = random(toRead.length);
-        String finalQuote = String.format("\"%s\" was said by the author %s.", toRead[randomQuoteNumber].text, toRead[randomQuoteNumber].author);
+    public static void quotesFromCommandLine() throws IOException {
+        try {
+            QuotesFinder findQuote = new QuotesFinder();
+            String firstStep = findQuote.apiPing();
+            saveQuote(firstStep);
+            System.out.println(firstStep);
+        } catch (IOException e) {
+            QuotesFinder backUpQuote = new QuotesFinder();
+            System.out.println("why am I here?" + toStringRandomizer(backUpQuote.quoteArrayCreator()));
+        }
+    }
+
+    public String apiPing() throws IOException {
+        URL url = new URL("http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        return input.readLine();
+    }
+
+    public Quote singleQuoteOut(String jsonString) {
+        Gson quote = new Gson();
+        ForismaticQuote newQuote = quote.fromJson(jsonString, ForismaticQuote.class);
+        System.out.println(newQuote);
+        return newQuote;
+    }
+
+    public static void saveQuote(String quoteJson) throws IOException {
+        String path = "src/main/resources/recentquotes.json";
+
+        String guts = Files.readString((Paths.get(path)));
+        guts = guts.substring(0, guts.length() - 1);
+//        System.out.println("guts after losing one" + guts);
+        guts += String.format(",%s\n]", quoteJson);
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter((new FileOutputStream(path)), "UTF8")); // Cp1252 StandardCharsets.UTF_8
+        writer.write(guts);
+
+        writer.close();
+    }
+
+    public List<Quote> quoteArrayCreator() throws FileNotFoundException {
+        Gson quotes = new Gson();
+        FileReader quotesFile = new FileReader("src/main/resources/recentquotes.json");
+        Quote[] newList = quotes.fromJson(quotesFile, Quote[].class);
+        List<Quote> quotesAll = new ArrayList<>(Arrays.asList(newList));
+        return quotesAll;
+    }
+
+    public static String toStringRandomizer(List<Quote> toRead) {
+        int randomQuoteNumber = random(toRead.size());
+        String finalQuote = String.format("\"%s\" was said by the author %s.", toRead.get(randomQuoteNumber).text, toRead.get(randomQuoteNumber).author);
         System.out.println(finalQuote);
         return finalQuote;
     }
 
-    public int random(int sizeOfRandom){
+    public static int random(int sizeOfRandom){
         int a = (int) (Math.random() * sizeOfRandom);
         return a;
     }

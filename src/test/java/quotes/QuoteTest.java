@@ -6,7 +6,9 @@ package quotes;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -14,15 +16,30 @@ public class QuoteTest {
 
   @Test public void functionalityTestOne() throws FileNotFoundException {
     QuotesFinder heresThing  = new QuotesFinder();
-    Quote[] thingToTest = heresThing.quoteArrayCreator();
-    assertEquals(Quote[].class, thingToTest.getClass());
+    List<Quote> thingToTest = heresThing.quoteArrayCreator();
   }
 
   @Test public void functionalityTestTwo() throws FileNotFoundException {
     QuotesFinder heresThing  = new QuotesFinder();
-    Quote[] quoteArray = heresThing.quoteArrayCreator();
-    int thingToTest = heresThing.random(quoteArray.length);
-    int i = 1;
-    assertNotNull(String.valueOf(int.class), thingToTest); // how to test that a primitive is it's class/type?
+    List<Quote> quoteArray = heresThing.quoteArrayCreator();
+    int thingToTest = heresThing.random(quoteArray.size());
+  }
+
+  @Test public void apiPingTest() throws IOException {
+    QuotesFinder newQuote = new QuotesFinder();
+    String theReturn = (newQuote.apiPing());
+    assertEquals("This is the first character.", '{', theReturn.charAt(0));
+  }
+
+  @Test public void quoteObjCreatorTest() throws IOException { // I need to strengthen tests. Would like help setting up this on terminal.
+    QuotesFinder testQuote = new QuotesFinder();
+    String theQuote = testQuote.apiPing();
+    Quote formedQuote = testQuote.singleQuoteOut(theQuote);
+  }
+
+  @Test public void saveTheQuote() throws IOException {
+    QuotesFinder testQuote = new QuotesFinder();
+//    String theQuote = testQuote.apiPing();
+    testQuote.quotesFromCommandLine();
   }
 }
