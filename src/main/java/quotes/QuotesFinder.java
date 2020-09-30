@@ -17,22 +17,26 @@ import java.util.List;
 public class QuotesFinder {
 
     public static void main(String[] args) throws IOException {
-        quotesFromCommandLine();
+        displayQuote();
     }
 
-    public static void quotesFromCommandLine() throws IOException {
+    public static void displayQuote() throws IOException {
         try {
-            QuotesFinder findQuote = new QuotesFinder();
-            String firstStep = findQuote.apiPing();
+            QuotesFinder quotesFinder = new QuotesFinder();
+            String firstStep = quotesFinder.returnQuoteFromApi();
             saveQuote(firstStep);
-            System.out.println(firstStep);
+            List<Quote> quotesList = quotesFinder.createQuoteArray();
+            Quote latestQuote = quotesFinder.singleQuoteOut(firstStep);
+            System.out.println(latestQuote);
+//            quotesList.add(latestQuote);
+            recreateJsonFile(quotesList);
         } catch (IOException e) {
             QuotesFinder backUpQuote = new QuotesFinder();
-            System.out.println("why am I here?" + toStringRandomizer(backUpQuote.quoteArrayCreator()));
+            System.out.println("Why am I here?" + toStringRandomizer(backUpQuote.createQuoteArray()));
         }
     }
 
-    public String apiPing() throws IOException {
+    public String returnQuoteFromApi() throws IOException {
         URL url = new URL("http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
@@ -42,30 +46,27 @@ public class QuotesFinder {
 
     public Quote singleQuoteOut(String jsonString) {
         Gson quote = new Gson();
-        ForismaticQuote newQuote = quote.fromJson(jsonString, ForismaticQuote.class);
-        System.out.println(newQuote);
-        return newQuote;
+        //        System.out.println(newQuote);
+        return quote.fromJson(jsonString, ForismaticQuote.class);
     }
 
     public static void saveQuote(String quoteJson) throws IOException {
         String path = "src/main/resources/recentquotes.json";
-
-        String guts = Files.readString((Paths.get(path)));
-        guts = guts.substring(0, guts.length() - 1);
-//        System.out.println("guts after losing one" + guts);
-        guts += String.format(",%s\n]", quoteJson);
+        System.out.println(quoteJson);
+        String file = Files.readString((Paths.get(path)));
+        file = file.substring(0, file.length() - 1);
+        file += String.format(", %s", quoteJson);
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter((new FileOutputStream(path)), "UTF8")); // Cp1252 StandardCharsets.UTF_8
-        writer.write(guts);
+        writer.write(file);
 
         writer.close();
     }
 
-    public List<Quote> quoteArrayCreator() throws FileNotFoundException {
+    public List<Quote> createQuoteArray() throws FileNotFoundException {
         Gson quotes = new Gson();
         FileReader quotesFile = new FileReader("src/main/resources/recentquotes.json");
         Quote[] newList = quotes.fromJson(quotesFile, Quote[].class);
-        List<Quote> quotesAll = new ArrayList<>(Arrays.asList(newList));
-        return quotesAll;
+        return new ArrayList<>(Arrays.asList(newList));
     }
 
     public static String toStringRandomizer(List<Quote> toRead) {
@@ -75,8 +76,13 @@ public class QuotesFinder {
         return finalQuote;
     }
 
-    public static int random(int sizeOfRandom){
-        int a = (int) (Math.random() * sizeOfRandom);
-        return a;
+    private static int random(int sizeOfRandom){
+        return (int) (Math.random() * sizeOfRandom);
+    }
+
+    private static void recreateJsonFile(List<Quote> fileToJson) throws IOException {
+        Gson output = new Gson();
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter((new FileOutputStream("src/main/resources/recentquotes.json")), "UTF8")); // Cp1252 StandardCharsets.UTF_8
+        writer.write(output.toJson(fileToJson));
     }
 }
