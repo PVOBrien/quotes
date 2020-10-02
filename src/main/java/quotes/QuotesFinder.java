@@ -21,18 +21,24 @@ public class QuotesFinder {
     }
 
     public static void displayQuote() throws IOException {
+        String backupQuote = "";
+
         try {
-            QuotesFinder quotesFinder = new QuotesFinder();
+            QuotesFinder quotesFinder = new QuotesFinder(); // creates new Quotesfinder
+            List<Quote> quotesList = quotesFinder.createQuoteArray(); // spools up the quoteslist
+            backupQuote = randomQuoteProvider(quotesList);
             String firstStep = quotesFinder.returnQuoteFromApi();
-            saveQuote(firstStep);
-            List<Quote> quotesList = quotesFinder.createQuoteArray();
-            Quote latestQuote = quotesFinder.singleQuoteOut(firstStep);
-            System.out.println(latestQuote);
-//            quotesList.add(latestQuote);
-            recreateJsonFile(quotesList);
+
+            ForismaticQuote quoteToAdd = quotesFinder.singleQuoteOut(firstStep); // get the object
+            quoteToAdd.normalizeQuote(quoteToAdd.quoteAuthor, quoteToAdd.quoteText); // make it a more full quote with additional key value pairs filled in.
+
+            quotesList.add(quoteToAdd); // add it to the quoteslist.
+
+            writeItOut("src/main/resources/recentquotes.json", quotesList); // save it back to the file.
+
         } catch (IOException e) {
-            QuotesFinder backUpQuote = new QuotesFinder();
-            System.out.println("Why am I here?" + toStringRandomizer(backUpQuote.createQuoteArray()));
+              System.out.println("Here's the backup quote " + backupQuote);
+              throw e;
         }
     }
 
@@ -44,22 +50,9 @@ public class QuotesFinder {
         return input.readLine();
     }
 
-    public Quote singleQuoteOut(String jsonString) {
+    public ForismaticQuote singleQuoteOut(String jsonString) {
         Gson quote = new Gson();
-        //        System.out.println(newQuote);
         return quote.fromJson(jsonString, ForismaticQuote.class);
-    }
-
-    public static void saveQuote(String quoteJson) throws IOException {
-        String path = "src/main/resources/recentquotes.json";
-        System.out.println(quoteJson);
-        String file = Files.readString((Paths.get(path)));
-        file = file.substring(0, file.length() - 1);
-        file += String.format(", %s", quoteJson);
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter((new FileOutputStream(path)), "UTF8")); // Cp1252 StandardCharsets.UTF_8
-        writer.write(file);
-
-        writer.close();
     }
 
     public List<Quote> createQuoteArray() throws FileNotFoundException {
@@ -69,10 +62,9 @@ public class QuotesFinder {
         return new ArrayList<>(Arrays.asList(newList));
     }
 
-    public static String toStringRandomizer(List<Quote> toRead) {
+    public static String randomQuoteProvider(List<Quote> toRead) {
         int randomQuoteNumber = random(toRead.size());
         String finalQuote = String.format("\"%s\" was said by the author %s.", toRead.get(randomQuoteNumber).text, toRead.get(randomQuoteNumber).author);
-        System.out.println(finalQuote);
         return finalQuote;
     }
 
@@ -81,8 +73,17 @@ public class QuotesFinder {
     }
 
     private static void recreateJsonFile(List<Quote> fileToJson) throws IOException {
-        Gson output = new Gson();
+        Gson gson = new Gson();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter((new FileOutputStream("src/main/resources/recentquotes.json")), "UTF8")); // Cp1252 StandardCharsets.UTF_8
-        writer.write(output.toJson(fileToJson));
+        writer.write(gson.toJson(fileToJson));
+    }
+
+    public static void writeItOut(String filepath, List<Quote> allQuotes) throws IOException {
+        File jsonFile = new File(filepath);
+        jsonFile.createNewFile();
+        FileWriter jsonWriter = new FileWriter(filepath);
+        Gson gson = new Gson();
+        gson.toJson(allQuotes, jsonWriter);
+        jsonWriter.close();
     }
 }

@@ -21,7 +21,7 @@ public class QuoteTest {
   @Test public void functionalityTestTwo() throws FileNotFoundException {
     QuotesFinder heresThing  = new QuotesFinder();
     List<Quote> quoteArray = heresThing.createQuoteArray();
-    String thingToTest = QuotesFinder.toStringRandomizer(heresThing.createQuoteArray());
+    String thingToTest = QuotesFinder.randomQuoteProvider(heresThing.createQuoteArray());
   }
 
   @Test public void apiPingTest() throws IOException {
@@ -30,11 +30,11 @@ public class QuoteTest {
     assertEquals("This is the first character.", '{', theReturn.charAt(0));
   }
 
-  @Test public void quoteObjCreatorTest() throws IOException { // I need to strengthen tests. Would like help setting up this on terminal.
-    QuotesFinder testQuote = new QuotesFinder();
-    String theQuote = testQuote.returnQuoteFromApi();
-    Quote formedQuote = testQuote.singleQuoteOut(theQuote);
-  }
+//  @Test public void quoteObjCreatorTest() throws IOException { // I need to strengthen tests. Would like help setting up this on terminal.
+//    QuotesFinder testQuote = new QuotesFinder();
+//    String theQuote = testQuote.returnQuoteFromApi();
+//    Quote formedQuote = testQuote.forismaticQuoteCreator(theQuote);
+//  }
 
 //  @Test public void saveTheQuote() throws IOException {
 //    QuotesFinder testQuote = new QuotesFinder();

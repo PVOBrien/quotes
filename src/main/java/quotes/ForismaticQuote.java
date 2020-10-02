@@ -2,18 +2,26 @@ package quotes;
 
 import java.util.ArrayList;
 
-public class ForismaticQuote extends Quote {
+public class ForismaticQuote extends Quote{
 
-  String quoteAuthor;
   String quoteText;
+  String quoteAuthor;
 
   public ForismaticQuote(ArrayList<String> tags, String author, String likes, String text) {
     super(tags, author, likes, text);
-    this.quoteAuthor = author;
-    this.quoteText = text;
+  }
+
+//  public ForismaticQuote(String quoteText, String quoteAuthor) {
+//    this.text = quoteText;
+//    this.author = quoteAuthor;
+//  }
+
+  public void normalizeQuote(String toAuthor, String toQuote){
+    this.author = toAuthor;
+    this.text = toQuote;
   }
 
   public String toString() {
-    return String.format("Here's the Author: %s\nHere's the Quote: %s", quoteAuthor, quoteText);
+    return String.format("From Forismatic, Here's the Author: %s\nHere's the Quote: %s", this.quoteAuthor, this.quoteText);
   }
 }
