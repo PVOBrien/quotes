@@ -23,8 +23,7 @@ public class QuoteTest {
   @Test public void quoteCreatedTest(){
     ArrayList<String> intoQuote= new ArrayList<>();
     intoQuote.add("yes");
-    Quote testQuote = new Quote(intoQuote, "PVOV", "20", "gotta " +
-                                                               "catch'em all!");
+    Quote testQuote = new Quote(intoQuote, "PVOV", "20", "gotta catch'em all!");
     String whatToTest = testQuote.toString();
     assertEquals("This is the quote.", "From Quote ArrayList\n" +
                                                "Author: PVOV\n" +
@@ -37,12 +36,11 @@ public class QuoteTest {
     List<Quote> quoteArray = heresThing.createQuoteArray();
     Quote lastquote = quoteArray.get(quoteArray.size()-1);
     System.out.println(lastquote);
-    QuotesFinder.displayQuote();
+    QuotesFinder.displayApiQuote();
     QuotesFinder latestQuoteList = new QuotesFinder();
     List<Quote> quoteArrayNew = latestQuoteList.createQuoteArray();
     Quote newLastquote = quoteArrayNew.get(quoteArray.size()-1);
-    assertFalse("These shouldn't be the same",
-            lastquote == newLastquote); // confirms the last item
+    assertNotSame("These shouldn't be the same", lastquote, newLastquote); // confirms the last item
     // prior to the lastest display quote is different ie something
     // was saved to that slot.
   }
@@ -53,4 +51,16 @@ public class QuoteTest {
     assertEquals("This is the first character.", '{', theReturn.charAt(0));
   }
 
+  @Test public void returnAnAuthorTest() throws FileNotFoundException {
+    assertNotNull(QuotesFinder.returnQuoteFromAuthor("marilyn"));
+    assertNotNull(QuotesFinder.returnQuoteFromAuthor("Marilyn"));
+  }
+
+  @Test public void returnAQuoteTest() throws FileNotFoundException {
+    assertNotNull(QuotesFinder.returnQuoteWithThatWord("check"));
+  }
+
+  @Test public void returnAnApiQuoteTest() throws IOException {
+    assertNotNull(QuotesFinder.displayApiQuote());
+  }
 }
