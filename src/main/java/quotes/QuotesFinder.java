@@ -25,7 +25,9 @@ public class QuotesFinder {
             QuotesFinder quotesFinder = new QuotesFinder(); // creates new Quotesfinder
             List<Quote> quotesList = quotesFinder.createQuoteArray(); // spools up the quotesList
             backupQuote = randomQuoteProvider(quotesList);
-            String firstStep = quotesFinder.returnQuoteFromApi();
+
+
+                String firstStep = quotesFinder.returnQuoteFromApi();
 
             ForismaticQuote quoteToAdd = quotesFinder.singleQuoteOut(firstStep); // get the object
             quoteToAdd.normalizeQuote(quoteToAdd.quoteAuthor, quoteToAdd.quoteText); // make it a more full quote with additional key value pairs filled in.
