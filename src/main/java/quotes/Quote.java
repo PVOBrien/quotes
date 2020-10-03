@@ -16,7 +16,7 @@ public class Quote {
   }
 
 public String toString() {
-  return String.format("Here's this thing %s", author);
+  return String.format("From Quote ArrayList\nAuthor: %s\nQuote: %s", author, text);
   }
 }
 
