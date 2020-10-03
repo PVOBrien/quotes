@@ -46,4 +46,3 @@ apiPing() - returns a quote from an api call. Also stores that quote into a json
 ## How to run
 
 Run from within intelliJ for test suite.
->>>>>>> 35afe65b45baf87eaef6503adf0ba03e633d52d4

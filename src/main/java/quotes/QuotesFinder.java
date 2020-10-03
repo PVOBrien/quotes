@@ -8,8 +8,6 @@ import com.google.gson.* ;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,14 +23,18 @@ public class QuotesFinder {
 
         try {
             QuotesFinder quotesFinder = new QuotesFinder(); // creates new Quotesfinder
-            List<Quote> quotesList = quotesFinder.createQuoteArray(); // spools up the quoteslist
+            List<Quote> quotesList = quotesFinder.createQuoteArray(); // spools up the quotesList
             backupQuote = randomQuoteProvider(quotesList);
-            String firstStep = quotesFinder.returnQuoteFromApi();
+
+
+                String firstStep = quotesFinder.returnQuoteFromApi();
 
             ForismaticQuote quoteToAdd = quotesFinder.singleQuoteOut(firstStep); // get the object
             quoteToAdd.normalizeQuote(quoteToAdd.quoteAuthor, quoteToAdd.quoteText); // make it a more full quote with additional key value pairs filled in.
 
-            quotesList.add(quoteToAdd); // add it to the quoteslist.
+            System.out.println(quoteToAdd);
+
+            quotesList.add(quoteToAdd); // add it to the quotesList.
 
             writeItOut("src/main/resources/recentquotes.json", quotesList); // save it back to the file.
 
@@ -64,26 +66,20 @@ public class QuotesFinder {
 
     public static String randomQuoteProvider(List<Quote> toRead) {
         int randomQuoteNumber = random(toRead.size());
-        String finalQuote = String.format("\"%s\" was said by the author %s.", toRead.get(randomQuoteNumber).text, toRead.get(randomQuoteNumber).author);
-        return finalQuote;
+        return String.format("\"%s\" was said by the author %s.", toRead.get(randomQuoteNumber).text, toRead.get(randomQuoteNumber).author);
+    }
+
+    public static void writeItOut(String filepath, List<Quote> allQuotes) throws IOException {
+//        File jsonFile = new File(filepath);
+//        jsonFile.createNewFile();
+        FileWriter jsonWriter = new FileWriter(filepath);
+        Gson gson = new Gson();
+        gson.toJson(allQuotes, jsonWriter);
+        jsonWriter.close();
     }
 
     private static int random(int sizeOfRandom){
         return (int) (Math.random() * sizeOfRandom);
     }
 
-    private static void recreateJsonFile(List<Quote> fileToJson) throws IOException {
-        Gson gson = new Gson();
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter((new FileOutputStream("src/main/resources/recentquotes.json")), "UTF8")); // Cp1252 StandardCharsets.UTF_8
-        writer.write(gson.toJson(fileToJson));
-    }
-
-    public static void writeItOut(String filepath, List<Quote> allQuotes) throws IOException {
-        File jsonFile = new File(filepath);
-        jsonFile.createNewFile();
-        FileWriter jsonWriter = new FileWriter(filepath);
-        Gson gson = new Gson();
-        gson.toJson(allQuotes, jsonWriter);
-        jsonWriter.close();
-    }
 }
