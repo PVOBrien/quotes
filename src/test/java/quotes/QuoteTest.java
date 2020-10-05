@@ -50,10 +50,6 @@ public class QuoteTest {
   @Test public void apiPingTest() throws IOException {
     QuotesFinder newQuote = new QuotesFinder();
     String theReturn = (newQuote.returnQuoteFromApi());
-    assertEquals("This is the first character.", '{', theReturn.charAt(0));
+    assertEquals("This is the first character.", '{', theReturn.charAt(0)); // TODO: 10/4/2020 refactor to build a quote object from this.
   }
-<<<<<<< HEAD
-=======
-
->>>>>>> 2c47e1ac1d1ab4a022c7ff719acf179746d2d98c
 }
