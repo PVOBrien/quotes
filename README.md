@@ -37,7 +37,7 @@ Using GSON to parse json.
 
 quoteArrayCreator() - hardcoded. Takes in a file in the resource folder of the project, and turns it into an array of quotes. Takes in no arguments/params.
 
-random(int) - takes in an int to know the highest number to be random, and returns that number.
+random(int) - takes in an int to know the highest number to be random, and returns that number. This should be a private method.
 
 toStringRandomizer(Quote[]) takes in an array of Quote objects, and outputs a random quote by an author.
 
