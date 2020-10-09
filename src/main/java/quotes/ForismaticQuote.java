@@ -22,6 +22,6 @@ public class ForismaticQuote extends Quote{
   }
 
   public String toString() {
-    return String.format("From Forismatic, Here's the Author: %s\nHere's the Quote: %s", this.quoteAuthor, this.quoteText);
+    return String.format("Here's the Author: %s\nHere's the Quote: %s", this.quoteAuthor, this.quoteText);
   }
 }

@@ -15,34 +15,103 @@ import java.util.List;
 public class QuotesFinder {
 
     public static void main(String[] args) throws IOException {
-        displayQuote();
+        if (args[0].toLowerCase().equals("author"))
+            System.out.println(returnQuoteFromAuthor(args[1]));
+        if (args[0].toLowerCase().equals("contains"))
+            System.out.println(returnQuoteWithThatWord(args[1]));
+        if (args[0].toLowerCase().equals("web"))
+            System.out.println(displayApiQuote());
+        System.out.println("\nType in the word \"author\" or \"contains\". \nIf you chose author, then input their first OR last name.\nIf you choose contains choose any word.");
     }
 
-    public static void displayQuote() throws IOException {
-        String backupQuote = "";
+    public static String returnQuoteFromAuthor(String authorToCheck) throws FileNotFoundException {
+        QuotesFinder quotesFinder = new QuotesFinder(); // creates new Quotesfinder
+        ArrayList<Quote> quotesList = quotesFinder.createQuoteArray();  // spools up the quotesList
+        authorToCheck = firstToUpperCase(authorToCheck);
+        ArrayList<Quote> ofSelectedAuthor = new ArrayList<>();
+        for (Quote entries : quotesList) {
+            if (entries.author.contains(authorToCheck)) {
+                ofSelectedAuthor.add(entries);
+            }
+        }
+        if (ofSelectedAuthor.size() > 0) {
+            return randomQuoteProvider(ofSelectedAuthor);
+        } else {
+            backupQuote();
+        }
+        return null;
+    }
+
+    public static String returnQuoteWithThatWord(String wordToCheck) throws FileNotFoundException {
+        QuotesFinder quotesFinder = new QuotesFinder(); // creates new Quotesfinder
+        ArrayList<Quote> quotesList = quotesFinder.createQuoteArray();  // spools up the quotesList
+        wordToCheck = wordToCheck.toLowerCase();
+        ArrayList<Quote> ofQuotesWithTheWord = new ArrayList<>();
+        for (Quote entries : quotesList) {
+            if (entries.text.contains(wordToCheck)) {
+                ofQuotesWithTheWord.add(entries);
+            }
+        }
+        return randomQuoteProvider(ofQuotesWithTheWord);
+    }
+
+
+    public static String displayApiQuote() throws IOException {
 
         try {
             QuotesFinder quotesFinder = new QuotesFinder(); // creates new Quotesfinder
             List<Quote> quotesList = quotesFinder.createQuoteArray(); // spools up the quotesList
-            backupQuote = randomQuoteProvider(quotesList);
 
-
-                String firstStep = quotesFinder.returnQuoteFromApi();
+            String firstStep = quotesFinder.returnQuoteFromApi(); // get a quote from the API.
 
             ForismaticQuote quoteToAdd = quotesFinder.singleQuoteOut(firstStep); // get the object
             quoteToAdd.normalizeQuote(quoteToAdd.quoteAuthor, quoteToAdd.quoteText); // make it a more full quote with additional key value pairs filled in.
-
-            System.out.println(quoteToAdd);
 
             quotesList.add(quoteToAdd); // add it to the quotesList.
 
             writeItOut("src/main/resources/recentquotes.json", quotesList); // save it back to the file.
 
+            return quoteToAdd.toString();
+
         } catch (IOException e) {
-              System.out.println("Here's the backup quote " + backupQuote);
-              throw e;
+            backupQuote();
+            throw e;
         }
     }
+
+// ====== METHOD FOR ARRAYLIST CREATION FROM JSON ========
+
+    public ArrayList<Quote> createQuoteArray() throws FileNotFoundException {
+        Gson quotes = new Gson();
+        FileReader quotesFile = new FileReader("src/main/resources/recentquotes.json");
+        Quote[] newList = quotes.fromJson(quotesFile, Quote[].class);
+        return new ArrayList<>(Arrays.asList(newList));
+    }
+
+    private static String firstToUpperCase(String toUpper){
+        String front = toUpper.substring(0,1).toUpperCase();
+        String theRest = toUpper.substring(1).toLowerCase();
+        return front+theRest;
+    }
+
+// ===== RETURNING QUOTES FROM ARRAYLIST ====
+
+    public static String randomQuoteProvider(List<Quote> toRead) {
+        int randomQuoteNumber = random(toRead.size());
+        return String.format("\"%s\" was said by the author %s.", toRead.get(randomQuoteNumber).text, toRead.get(randomQuoteNumber).author);
+    }
+
+    private static int random(int sizeOfRandom){
+        return (int) (Math.random() * sizeOfRandom);
+    }
+
+    public static String  backupQuote() throws FileNotFoundException {
+        QuotesFinder quotesFinder = new QuotesFinder(); // creates new Quotesfinder
+        List<Quote> quotesList = quotesFinder.createQuoteArray(); // spools up the quotesList
+        return randomQuoteProvider(quotesList);
+    }
+
+// ======== METHODS FOR API CALL QUOTE ===========
 
     public String returnQuoteFromApi() throws IOException {
         URL url = new URL("http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en");
@@ -57,18 +126,6 @@ public class QuotesFinder {
         return quote.fromJson(jsonString, ForismaticQuote.class);
     }
 
-    public List<Quote> createQuoteArray() throws FileNotFoundException {
-        Gson quotes = new Gson();
-        FileReader quotesFile = new FileReader("src/main/resources/recentquotes.json");
-        Quote[] newList = quotes.fromJson(quotesFile, Quote[].class);
-        return new ArrayList<>(Arrays.asList(newList));
-    }
-
-    public static String randomQuoteProvider(List<Quote> toRead) {
-        int randomQuoteNumber = random(toRead.size());
-        return String.format("\"%s\" was said by the author %s.", toRead.get(randomQuoteNumber).text, toRead.get(randomQuoteNumber).author);
-    }
-
     public static void writeItOut(String filepath, List<Quote> allQuotes) throws IOException {
 //        File jsonFile = new File(filepath);
 //        jsonFile.createNewFile();
@@ -77,9 +134,4 @@ public class QuotesFinder {
         gson.toJson(allQuotes, jsonWriter);
         jsonWriter.close();
     }
-
-    private static int random(int sizeOfRandom){
-        return (int) (Math.random() * sizeOfRandom);
-    }
-
 }
