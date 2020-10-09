@@ -50,6 +50,7 @@ public class QuoteTest {
     String theReturn = (newQuote.returnQuoteFromApi());
     assertEquals("This is the first character.", '{', theReturn.charAt(0));
   }
+}
 
   @Test public void returnAnAuthorTest() throws FileNotFoundException {
     assertNotNull(QuotesFinder.returnQuoteFromAuthor("marilyn"));
